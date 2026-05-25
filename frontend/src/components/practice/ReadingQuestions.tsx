@@ -37,12 +37,13 @@ export default function ReadingQuestions ( {
           <h2 className="text-xl font-black text-slate-950 dark:text-white">
             Reading Questions
           </h2>
+
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Answer based on the passage.
           </p>
         </div>
 
-        <span className="rounded-full bg-orange-50 px-4 py-2 text-sm font-black text-orange-600 dark:bg-orange-950/30 dark:text-orange-300">
+        <span className="rounded-full bg-cyan-50 px-4 py-2 text-sm font-black text-cyan-600 dark:bg-cyan-950/30 dark:text-cyan-300">
           { answeredCount }/{ questions.length } answered
         </span>
       </div>
@@ -60,7 +61,7 @@ export default function ReadingQuestions ( {
               className="rounded-2xl border border-slate-200 p-4 transition hover:shadow-md dark:border-slate-800"
             >
               <div className="mb-3 flex items-start gap-3">
-                <div className="mt-1 rounded-lg bg-orange-50 p-2 text-orange-600 dark:bg-orange-950/30 dark:text-orange-300">
+                <div className="mt-1 rounded-lg bg-cyan-50 p-2 text-cyan-600 dark:bg-cyan-950/30 dark:text-cyan-300">
                   <CircleHelp size={ 18 } />
                 </div>
 
@@ -92,7 +93,7 @@ export default function ReadingQuestions ( {
                   onChange={ ( event ) =>
                     onAnswerChange( item.id, event.target.value )
                   }
-                  className="w-full cursor-pointer rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:ring-orange-950"
+                  className="w-full cursor-pointer rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:ring-cyan-950"
                 >
                   <option value="">Select answer</option>
                   <option value="true">True</option>
@@ -106,7 +107,7 @@ export default function ReadingQuestions ( {
                     onAnswerChange( item.id, event.target.value )
                   }
                   placeholder="Type your answer..."
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:ring-orange-950"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:ring-cyan-950"
                 />
               ) }
 

@@ -50,10 +50,10 @@ export default function ReadingPassageSelector ( {
             type="button"
             onClick={ () => onChange( passage.id ) }
             className={ cn(
-              "group relative rounded-2xl border p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98]",
+              "group relative cursor-pointer rounded-2xl border p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98]",
               active
-                ? "border-orange-600 bg-orange-50 shadow-md shadow-orange-600/10 dark:bg-orange-950/30"
-                : "border-slate-200 bg-white hover:border-orange-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-orange-700"
+                ? "border-cyan-600 bg-cyan-50 shadow-md shadow-cyan-600/10 dark:bg-cyan-950/30"
+                : "border-slate-200 bg-white hover:border-cyan-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-cyan-700"
             ) }
           >
             <div className="flex items-start justify-between gap-4">
@@ -61,7 +61,7 @@ export default function ReadingPassageSelector ( {
                 className={ cn(
                   "rounded-2xl p-3 transition group-hover:scale-110",
                   active
-                    ? "bg-orange-600 text-white"
+                    ? "bg-cyan-600 text-white"
                     : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300"
                 ) }
               >
@@ -69,7 +69,7 @@ export default function ReadingPassageSelector ( {
               </div>
 
               { active && (
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-orange-600 text-white">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-600 text-white">
                   <Check size={ 16 } />
                 </div>
               ) }

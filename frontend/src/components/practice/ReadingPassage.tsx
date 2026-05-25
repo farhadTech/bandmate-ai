@@ -17,7 +17,7 @@ export default function ReadingPassage ( {
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-orange-50 p-3 text-orange-600 dark:bg-orange-950/30 dark:text-orange-300">
+          <div className="rounded-xl bg-cyan-50 p-3 text-cyan-600 dark:bg-cyan-950/30 dark:text-cyan-300">
             <BookOpen size={ 24 } />
           </div>
 
@@ -25,6 +25,7 @@ export default function ReadingPassage ( {
             <h2 className="text-xl font-black text-slate-950 dark:text-white">
               { title }
             </h2>
+
             <p className="mt-1 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
               <Clock size={ 15 } />
               Suggested reading time: { readingTime }
@@ -32,7 +33,7 @@ export default function ReadingPassage ( {
           </div>
         </div>
 
-        <div className="inline-flex items-center gap-2 rounded-xl bg-orange-50 px-4 py-2 text-sm font-bold text-orange-600 dark:bg-orange-950/30 dark:text-orange-300">
+        <div className="inline-flex items-center gap-2 rounded-xl bg-cyan-50 px-4 py-2 text-sm font-bold text-cyan-600 dark:bg-cyan-950/30 dark:text-cyan-300">
           <Highlighter size={ 16 } />
           Read carefully
         </div>

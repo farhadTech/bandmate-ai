@@ -13,7 +13,7 @@ export default function ReadingScorePreview ( { visible, score, total }: Props )
   if ( !visible ) {
     return (
       <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-50 text-orange-600 dark:bg-orange-950/40">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-50 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-300">
           <BookOpen size={ 28 } />
         </div>
 
@@ -29,6 +29,7 @@ export default function ReadingScorePreview ( { visible, score, total }: Props )
   }
 
   const percentage = Math.round( ( score / total ) * 100 );
+
   const estimatedBand =
     percentage >= 90
       ? "8.5"
@@ -42,7 +43,7 @@ export default function ReadingScorePreview ( { visible, score, total }: Props )
     <div className="animate-in fade-in slide-in-from-bottom-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm duration-500 dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-start justify-between gap-5">
         <div>
-          <p className="text-sm font-black text-orange-600">
+          <p className="text-sm font-black text-cyan-600 dark:text-cyan-300">
             Reading Result
           </p>
 
@@ -55,7 +56,7 @@ export default function ReadingScorePreview ( { visible, score, total }: Props )
           </p>
         </div>
 
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-600 text-2xl font-black text-white">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-600 text-2xl font-black text-white">
           { score }/{ total }
         </div>
       </div>
@@ -63,12 +64,14 @@ export default function ReadingScorePreview ( { visible, score, total }: Props )
       <div className="mt-6 rounded-2xl bg-slate-50 p-4 dark:bg-slate-950">
         <div className="mb-2 flex justify-between text-sm font-bold">
           <span className="text-slate-700 dark:text-slate-200">Accuracy</span>
-          <span className="text-orange-600">{ percentage }%</span>
+          <span className="text-cyan-600 dark:text-cyan-300">
+            { percentage }%
+          </span>
         </div>
 
         <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
           <div
-            className="h-full rounded-full bg-orange-600 transition-all duration-700"
+            className="h-full rounded-full bg-cyan-600 transition-all duration-700"
             style={ { width: `${ percentage }%` } }
           />
         </div>
@@ -111,13 +114,11 @@ function InfoBox ( {
   return (
     <div className="rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
       <div className="mb-2 flex items-center gap-3">
-        <div className="rounded-xl bg-orange-50 p-2 text-orange-600 dark:bg-orange-950/30 dark:text-orange-300">
+        <div className="rounded-xl bg-cyan-50 p-2 text-cyan-600 dark:bg-cyan-950/30 dark:text-cyan-300">
           <Icon size={ 18 } />
         </div>
 
-        <h3 className="font-black text-slate-950 dark:text-white">
-          { title }
-        </h3>
+        <h3 className="font-black text-slate-950 dark:text-white">{ title }</h3>
       </div>
 
       <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">

@@ -35,7 +35,8 @@ const readingData: Record<
     questions: [
       {
         id: 1,
-        question: "Urban gardening is popular because many city homes have limited ____.",
+        question:
+          "Urban gardening is popular because many city homes have limited ____.",
         correctAnswer: "space",
         type: "short-answer",
       },
@@ -79,7 +80,8 @@ const readingData: Record<
       },
       {
         id: 3,
-        question: "Some employees feel ____ when working away from colleagues.",
+        question:
+          "Some employees feel ____ when working away from colleagues.",
         correctAnswer: "isolated",
         type: "short-answer",
       },
@@ -105,13 +107,15 @@ const readingData: Record<
       },
       {
         id: 2,
-        question: "Attention helps transfer information into long-term memory.",
+        question:
+          "Attention helps transfer information into long-term memory.",
         correctAnswer: "true",
         type: "true-false",
       },
       {
         id: 3,
-        question: "Sleep helps the brain process information learned during the ____.",
+        question:
+          "Sleep helps the brain process information learned during the ____.",
         correctAnswer: "day",
         type: "short-answer",
       },
@@ -162,7 +166,7 @@ export default function ReadingPage () {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-3 space-y-8 duration-500">
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 p-6 text-white shadow-xl shadow-orange-600/20 sm:p-8">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-500 via-sky-600 to-blue-700 p-6 text-white shadow-xl shadow-cyan-600/20 sm:p-8">
         <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:items-center">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold backdrop-blur">
@@ -174,7 +178,7 @@ export default function ReadingPage () {
               Reading Practice
             </h1>
 
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-orange-100 sm:text-base">
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-cyan-50 sm:text-base">
               Practice IELTS Reading passages with short-answer and
               true/false/not given questions, instant scoring, and improvement
               tips.
@@ -250,9 +254,9 @@ function HeroStat ( {
 } ) {
   return (
     <div className="rounded-2xl bg-white/15 p-4 backdrop-blur transition hover:scale-[1.02]">
-      <Icon size={ 22 } className="text-orange-100" />
+      <Icon size={ 22 } className="text-cyan-100" />
 
-      <p className="mt-3 text-xs font-bold uppercase tracking-wide text-orange-100">
+      <p className="mt-3 text-xs font-bold uppercase tracking-wide text-cyan-100">
         { label }
       </p>
 
@@ -265,7 +269,7 @@ function ReadingTips () {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-5 flex items-center gap-3">
-        <div className="rounded-xl bg-orange-50 p-3 text-orange-600 dark:bg-orange-950/30 dark:text-orange-300">
+        <div className="rounded-xl bg-cyan-50 p-3 text-cyan-600 dark:bg-cyan-950/30 dark:text-cyan-300">
           <Search size={ 22 } />
         </div>
 
