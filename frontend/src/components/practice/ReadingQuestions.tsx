@@ -4,14 +4,15 @@ import { CheckCircle2, CircleHelp, XCircle } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
-export type ListeningQuestion = {
+export type ReadingQuestion = {
   id: number;
   question: string;
   correctAnswer: string;
+  type: "short-answer" | "true-false";
 };
 
 type Props = {
-  questions: ListeningQuestion[];
+  questions: ReadingQuestion[];
   answers: Record<number, string>;
   checked: boolean;
   onAnswerChange: ( id: number, value: string ) => void;
@@ -19,7 +20,7 @@ type Props = {
   onReset: () => void;
 };
 
-export default function ListeningQuestions ( {
+export default function ReadingQuestions ( {
   questions,
   answers,
   checked,
@@ -34,14 +35,14 @@ export default function ListeningQuestions ( {
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h2 className="text-xl font-black text-slate-950 dark:text-white">
-            Questions
+            Reading Questions
           </h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Complete the answers while listening.
+            Answer based on the passage.
           </p>
         </div>
 
-        <span className="rounded-full bg-purple-50 px-4 py-2 text-sm font-black text-purple-600 dark:bg-purple-950/30 dark:text-purple-300">
+        <span className="rounded-full bg-orange-50 px-4 py-2 text-sm font-black text-orange-600 dark:bg-orange-950/30 dark:text-orange-300">
           { answeredCount }/{ questions.length } answered
         </span>
       </div>
@@ -59,7 +60,7 @@ export default function ListeningQuestions ( {
               className="rounded-2xl border border-slate-200 p-4 transition hover:shadow-md dark:border-slate-800"
             >
               <div className="mb-3 flex items-start gap-3">
-                <div className="mt-1 rounded-lg bg-purple-50 p-2 text-purple-600 dark:bg-purple-950/30 dark:text-purple-300">
+                <div className="mt-1 rounded-lg bg-orange-50 p-2 text-orange-600 dark:bg-orange-950/30 dark:text-orange-300">
                   <CircleHelp size={ 18 } />
                 </div>
 
@@ -76,22 +77,45 @@ export default function ListeningQuestions ( {
                       isCorrect ? "text-green-600" : "text-red-600"
                     ) }
                   >
-                    { isCorrect ? <CheckCircle2 size={ 22 } /> : <XCircle size={ 22 } /> }
+                    { isCorrect ? (
+                      <CheckCircle2 size={ 22 } />
+                    ) : (
+                      <XCircle size={ 22 } />
+                    ) }
                   </div>
                 ) }
               </div>
 
-              <input
-                value={ userAnswer }
-                onChange={ ( event ) => onAnswerChange( item.id, event.target.value ) }
-                placeholder="Type your answer..."
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-purple-500 focus:ring-4 focus:ring-purple-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:ring-purple-950"
-              />
+              { item.type === "true-false" ? (
+                <select
+                  value={ userAnswer }
+                  onChange={ ( event ) =>
+                    onAnswerChange( item.id, event.target.value )
+                  }
+                  className="w-full cursor-pointer rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:ring-orange-950"
+                >
+                  <option value="">Select answer</option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                  <option value="not given">Not Given</option>
+                </select>
+              ) : (
+                <input
+                  value={ userAnswer }
+                  onChange={ ( event ) =>
+                    onAnswerChange( item.id, event.target.value )
+                  }
+                  placeholder="Type your answer..."
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:ring-orange-950"
+                />
+              ) }
 
               { checked && !isCorrect && (
                 <p className="mt-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
                   Correct answer:{ " " }
-                  <span className="text-green-600">{ item.correctAnswer }</span>
+                  <span className="text-green-600">
+                    { item.correctAnswer }
+                  </span>
                 </p>
               ) }
             </div>
