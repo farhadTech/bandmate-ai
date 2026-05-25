@@ -1,10 +1,12 @@
 "use client";
 
-import { Bell, Moon, Search, Sun } from "lucide-react";
+import { Bell, Loader2, Moon, Search, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
+import useAuth from "@/hooks/useAuth";
 
 export default function Topbar () {
+  const { user, loading } = useAuth();
   const [ dark, setDark ] = useState( false );
 
   useEffect( () => {
@@ -29,6 +31,14 @@ export default function Topbar () {
     }
   }
 
+  const initials =
+    user?.full_name
+      ?.split( " " )
+      .map( ( part ) => part[ 0 ] )
+      .join( "" )
+      .slice( 0, 2 )
+      .toUpperCase() || "U";
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl transition-colors dark:border-slate-800 dark:bg-slate-950/80 sm:px-6 lg:px-8">
       <div className="ml-12 flex-1 lg:ml-0">
@@ -46,26 +56,49 @@ export default function Topbar () {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4">
-        <Button className="hidden sm:inline-flex">
-          Upgrade to Premium
-        </Button>
+        <Button className="hidden sm:inline-flex">Upgrade</Button>
 
         <button
+          type="button"
           onClick={ toggleTheme }
-          className="rounded-xl border border-slate-200 bg-white p-2.5 transition hover:scale-105 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
+          className="cursor-pointer rounded-xl border border-slate-200 bg-white p-2.5 transition hover:scale-105 hover:bg-slate-100 active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
+          aria-label="Toggle theme"
         >
           { dark ? <Sun size={ 20 } /> : <Moon size={ 20 } /> }
         </button>
 
-        <button className="relative rounded-xl border border-slate-200 bg-white p-2.5 transition hover:scale-105 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800">
+        <button
+          type="button"
+          className="relative cursor-pointer rounded-xl border border-slate-200 bg-white p-2.5 transition hover:scale-105 hover:bg-slate-100 active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800"
+          aria-label="Notifications"
+        >
           <Bell size={ 20 } />
+
           <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
             3
           </span>
         </button>
 
-        <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-blue-600 bg-blue-50 text-sm font-bold text-blue-600 dark:bg-blue-950">
-          S
+        <div className="hidden min-w-0 text-right md:block">
+          { loading ? (
+            <div className="flex items-center justify-end gap-2 text-sm font-bold text-slate-500">
+              <Loader2 size={ 14 } className="animate-spin" />
+              Loading
+            </div>
+          ) : (
+            <>
+              <p className="truncate text-sm font-black text-slate-950 dark:text-white">
+                { user?.full_name || "Student" }
+              </p>
+              <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                { user?.email || "student@example.com" }
+              </p>
+            </>
+          ) }
+        </div>
+
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-blue-600 bg-blue-50 text-sm font-black text-blue-600 dark:bg-blue-950">
+          { initials }
         </div>
       </div>
     </header>

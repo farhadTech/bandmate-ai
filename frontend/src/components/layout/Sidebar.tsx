@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu,
   Mic,
+  MoreHorizontal,
   PenLine,
   Settings,
   X,
@@ -39,7 +40,6 @@ const bottomNavLinks = [
   { label: "Writing", href: "/dashboard/writing", icon: PenLine },
   { label: "Speaking", href: "/dashboard/speaking", icon: Mic },
   { label: "Mock", href: "/dashboard/mock-test", icon: ClipboardList },
-  { label: "More", href: "/dashboard/settings", icon: Settings },
 ];
 
 export default function Sidebar () {
@@ -58,7 +58,7 @@ export default function Sidebar () {
   function handleLogout () {
     clearAuthSession();
     setOpen( false );
-    router.push( "/login" );
+    router.replace( "/login" );
     router.refresh();
   }
 
@@ -177,6 +177,15 @@ export default function Sidebar () {
               </Link>
             );
           } ) }
+
+          <button
+            type="button"
+            onClick={ () => setOpen( true ) }
+            className="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-xs font-black text-slate-500 transition-all duration-200 hover:bg-slate-100 hover:text-slate-950 active:scale-95 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+          >
+            <MoreHorizontal size={ 20 } />
+            <span className="truncate">More</span>
+          </button>
         </div>
       </nav>
     </>
