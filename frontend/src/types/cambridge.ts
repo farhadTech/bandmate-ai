@@ -1,26 +1,51 @@
-export interface CambridgeBook {
+export type TestStatus = "not-started" | "in-progress" | "completed";
+
+export type CambridgeBook = {
   id: number;
+  slug?: string;
   title: string;
-  description?: string;
-}
+  book_number?: number;
+  description?: string | null;
+  is_active?: boolean;
+};
 
-export interface CambridgeTest {
+export type CambridgeTest = {
   id: number;
+  slug?: string;
+  book_id: number;
+  test_number?: number;
   title: string;
-  book_id?: number;
-}
+  difficulty?: string;
+  status?: TestStatus;
+};
 
-export interface TestModule {
-  id: number;
-  module_type: string;
-  title?: string;
-}
+export type CambridgeBookWithTests = CambridgeBook & {
+  label: string;
+  tests: CambridgeTest[];
+};
 
-export interface TestQuestion {
+export type TestModule = {
   id: number;
+  slug?: string;
+  test_id: number;
+  module_type: "listening" | "reading" | "writing" | "speaking";
+  title: string;
+  duration_minutes: number;
+  total_questions: number;
+  instructions?: string | null;
+  audio_url?: string | null;
+  passage_text?: string | null;
+  writing_prompt?: string | null;
+  speaking_prompt?: string | null;
+};
+
+export type TestQuestion = {
+  id: number;
+  module_id: number;
   question_number: number;
-  question_text: string;
-  question_type?: string;
-  options?: string[];
-  answer?: string;
-}
+  question_type: string;
+  prompt: string;
+  options_json?: string | null;
+  correct_answer?: string | null;
+  explanation?: string | null;
+};
