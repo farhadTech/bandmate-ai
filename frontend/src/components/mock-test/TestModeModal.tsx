@@ -6,14 +6,14 @@ import {
   Headphones,
   Mic,
   PenLine,
-  Play,
+  ShieldCheck,
   Timer,
   X,
 } from "lucide-react";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
-import type { CambridgeBook, CambridgeTest } from "./CambridgeBookCard";
+import type { CambridgeBook, CambridgeTest } from "@/types/cambridge";
 
 export type TestMode = "practice" | "exam";
 
@@ -35,36 +35,32 @@ type Props = {
 const modules: {
   id: SelectedModule;
   label: string;
+  description: string;
   icon: typeof Headphones;
-  color: string;
 }[] = [
     {
       id: "listening",
       label: "Listening",
+      description: "Audio, notes, and 40 questions",
       icon: Headphones,
-      color:
-        "border-purple-600 bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300",
     },
     {
       id: "reading",
       label: "Reading",
+      description: "Passages with full CBT layout",
       icon: BookOpen,
-      color:
-        "border-cyan-600 bg-cyan-50 text-cyan-700 dark:bg-cyan-950/30 dark:text-cyan-300",
     },
     {
       id: "writing",
       label: "Writing",
+      description: "Task 1 and Task 2 editor",
       icon: PenLine,
-      color:
-        "border-blue-600 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-300",
     },
     {
       id: "speaking",
       label: "Speaking",
+      description: "Recorder-style practice flow",
       icon: Mic,
-      color:
-        "border-green-600 bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-300",
     },
   ];
 
@@ -91,13 +87,13 @@ export default function TestModeModal ( {
   const activeTest = test;
 
   function toggleModule ( moduleId: SelectedModule ) {
-    setSelectedModules( ( prev ) => {
-      if ( prev.includes( moduleId ) ) {
-        if ( prev.length === 1 ) return prev;
-        return prev.filter( ( item ) => item !== moduleId );
+    setSelectedModules( ( previous ) => {
+      if ( previous.includes( moduleId ) ) {
+        if ( previous.length === 1 ) return previous;
+        return previous.filter( ( item ) => item !== moduleId );
       }
 
-      return [ ...prev, moduleId ];
+      return [ ...previous, moduleId ];
     } );
   }
 
@@ -111,110 +107,127 @@ export default function TestModeModal ( {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 py-8 backdrop-blur-sm">
-      <div className="animate-in fade-in zoom-in-95 relative w-full max-w-3xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl duration-300 dark:border-slate-800 dark:bg-slate-950">
-        <button
-          type="button"
-          onClick={ onClose }
-          className="absolute right-5 top-5 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-900 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-        >
-          <X size={ 18 } />
-        </button>
-
-        <div className="border-b border-slate-200 px-6 py-5 text-center dark:border-slate-800">
-          <p className="text-sm font-black text-blue-600 dark:text-blue-300">
-            { activeBook.title } · { activeTest.title }
-          </p>
-
-          <h2 className="mt-1 text-2xl font-black text-slate-950 dark:text-white">
-            Choose Test Mode
-          </h2>
-
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            Select practice mode or exam mode, then choose the IELTS modules you
-            want to attempt.
-          </p>
-        </div>
-
-        <div className="p-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <ModeCard
-              active={ mode === "practice" }
-              icon={ Play }
-              title="Practice Mode"
-              description="Flexible practice with pause, review, hints, and section control."
-              onClick={ () => setMode( "practice" ) }
-            />
-
-            <ModeCard
-              active={ mode === "exam" }
-              icon={ Timer }
-              title="Exam Mode"
-              description="Computer-based IELTS simulation with timer and strict flow."
-              onClick={ () => setMode( "exam" ) }
-            />
-          </div>
-
-          <div className="mt-8">
-            <div className="mb-4 text-center">
-              <h3 className="text-lg font-black text-slate-950 dark:text-white">
-                Select Modules
-              </h3>
-
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                You can choose one or multiple modules.
-              </p>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 px-4 py-6 backdrop-blur-md">
+      <div className="animate-in fade-in zoom-in-95 max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] border border-white/20 bg-white/90 p-5 shadow-2xl shadow-black/30 backdrop-blur-2xl duration-300 dark:border-slate-700/70 dark:bg-slate-950/90 sm:p-7">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-black text-blue-700 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300">
+              <ShieldCheck size={ 14 } />
+              CBT Test Setup
             </div>
 
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-              { modules.map( ( module ) => {
-                const Icon = module.icon;
-                const active = selectedModules.includes( module.id );
+            <h2 className="text-2xl font-black tracking-tight text-slate-950 dark:text-white sm:text-3xl">
+              { activeBook.title } · { activeTest.title }
+            </h2>
 
-                return (
-                  <button
-                    key={ module.id }
-                    type="button"
-                    onClick={ () => toggleModule( module.id ) }
-                    className={ cn(
-                      "relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border p-5 text-center transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98]",
-                      active
-                        ? module.color
-                        : "border-slate-200 bg-white text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-                    ) }
-                  >
-                    { active && (
-                      <div className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white">
-                        <Check size={ 14 } />
-                      </div>
-                    ) }
-
-                    <Icon size={ 28 } />
-
-                    <span className="text-sm font-black">{ module.label }</span>
-                  </button>
-                );
-              } ) }
-            </div>
-          </div>
-
-          <div className="mt-8 rounded-2xl bg-slate-50 p-4 text-center dark:bg-slate-900">
-            <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
-              You must complete all selected modules before the final result is
-              generated. In review mode, students can see wrong answers,
-              correct answers, and explanations.
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
+              Choose your mode and modules before entering the computer-based
+              IELTS test center.
             </p>
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button variant="outline" onClick={ onClose } className="flex-1">
-              Cancel
-            </Button>
+          <button
+            type="button"
+            onClick={ onClose }
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white/80 text-slate-500 transition hover:scale-105 hover:bg-slate-100 hover:text-slate-900 active:scale-95 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:bg-slate-800"
+            aria-label="Close modal"
+          >
+            <X size={ 20 } />
+          </button>
+        </div>
 
-            <Button onClick={ handleStart } className="flex-1">
-              Start Test
-            </Button>
+        <div className="mt-7 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <ModeCard
+            active={ mode === "practice" }
+            icon={ BookOpen }
+            title="Practice Mode"
+            description="Flexible practice with review, pause, and module switching."
+            onClick={ () => setMode( "practice" ) }
+          />
+
+          <ModeCard
+            active={ mode === "exam" }
+            icon={ Timer }
+            title="Exam Mode"
+            description="Strict CBT simulation with timer and exam-style flow."
+            onClick={ () => setMode( "exam" ) }
+          />
+        </div>
+
+        <div className="mt-8">
+          <div className="mb-4 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+            <div>
+              <h3 className="text-lg font-black text-slate-950 dark:text-white">
+                Select Modules
+              </h3>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                You can select one or multiple IELTS modules.
+              </p>
+            </div>
+
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+              { selectedModules.length }/4 selected
+            </span>
           </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            { modules.map( ( module ) => {
+              const Icon = module.icon;
+              const active = selectedModules.includes( module.id );
+
+              return (
+                <button
+                  key={ module.id }
+                  type="button"
+                  onClick={ () => toggleModule( module.id ) }
+                  className={ cn(
+                    "group flex cursor-pointer items-center justify-between gap-4 rounded-3xl border p-4 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98]",
+                    active
+                      ? "border-blue-500 bg-blue-50 shadow-blue-500/10 dark:border-blue-700 dark:bg-blue-950/30"
+                      : "border-slate-200 bg-white/70 hover:border-blue-300 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-blue-800"
+                  ) }
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={ cn(
+                        "flex h-12 w-12 items-center justify-center rounded-2xl transition group-hover:scale-110",
+                        active
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300"
+                      ) }
+                    >
+                      <Icon size={ 22 } />
+                    </div>
+
+                    <div>
+                      <h4 className="font-black text-slate-950 dark:text-white">
+                        { module.label }
+                      </h4>
+                      <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                        { module.description }
+                      </p>
+                    </div>
+                  </div>
+
+                  { active && (
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-white">
+                      <Check size={ 16 } />
+                    </div>
+                  ) }
+                </button>
+              );
+            } ) }
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button variant="outline" onClick={ onClose } className="w-full sm:w-auto">
+            Cancel
+          </Button>
+
+          <Button onClick={ handleStart } className="w-full sm:w-auto">
+            Start Test
+          </Button>
         </div>
       </div>
     </div>
@@ -229,7 +242,7 @@ function ModeCard ( {
   onClick,
 }: {
   active: boolean;
-  icon: typeof Play;
+  icon: typeof BookOpen;
   title: string;
   description: string;
   onClick: () => void;
@@ -239,22 +252,22 @@ function ModeCard ( {
       type="button"
       onClick={ onClick }
       className={ cn(
-        "relative cursor-pointer rounded-2xl border p-5 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98]",
+        "group cursor-pointer rounded-3xl border p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl active:scale-[0.98]",
         active
-          ? "border-blue-600 bg-blue-50 dark:bg-blue-950/30"
-          : "border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"
+          ? "border-blue-500 bg-blue-50 shadow-blue-500/10 dark:border-blue-700 dark:bg-blue-950/30"
+          : "border-slate-200 bg-white/70 hover:border-blue-300 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-blue-800"
       ) }
     >
-      <div className="mb-5 flex items-start justify-between gap-3">
+      <div className="mb-5 flex items-start justify-between gap-4">
         <div
           className={ cn(
-            "rounded-xl p-3",
+            "flex h-12 w-12 items-center justify-center rounded-2xl transition group-hover:scale-110",
             active
               ? "bg-blue-600 text-white"
               : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300"
           ) }
         >
-          <Icon size={ 24 } />
+          <Icon size={ 22 } />
         </div>
 
         { active && (
@@ -264,9 +277,9 @@ function ModeCard ( {
         ) }
       </div>
 
-      <h3 className="text-lg font-black text-slate-950 dark:text-white">
+      <h4 className="text-lg font-black text-slate-950 dark:text-white">
         { title }
-      </h3>
+      </h4>
 
       <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
         { description }

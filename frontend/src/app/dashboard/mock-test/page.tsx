@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import {
   BookOpen,
   CheckCircle2,
@@ -8,126 +9,192 @@ import {
   Filter,
   GraduationCap,
   Headphones,
+  Loader2,
   Mic,
   PenLine,
   Search,
   Sparkles,
 } from "lucide-react";
-import CambridgeBookCard, {
-  CambridgeBook,
-  CambridgeTest,
-} from "@/components/mock-test/CambridgeBookCard";
+
+import CambridgeBookCard from "@/components/mock-test/CambridgeBookCard";
+
 import TestModeModal, {
   SelectedModule,
   TestMode,
 } from "@/components/mock-test/TestModeModal";
+
 import Button from "@/components/ui/Button";
 
-function createCambridgeBooks (): CambridgeBook[] {
-  const bookNumbers = Array.from( { length: 16 }, ( _, index ) => 20 - index );
+import {
+  getBooks,
+  getBookTests,
+} from "@/lib/api/cambridge";
 
-  return bookNumbers.map( ( number ) => {
-    return {
-      id: `cambridge-${ number }`,
-      title: `Cambridge ${ number }`,
-      label: `C${ number }`,
-      tests: [
-        {
-          id: "test-1",
-          title: "Test 1",
-          status:
-            number === 20 || number === 18 || number === 15
-              ? "not-started"
-              : "completed",
-        },
-        {
-          id: "test-2",
-          title: "Test 2",
-          status:
-            number === 19 || number === 16 || number === 12
-              ? "in-progress"
-              : "not-started",
-        },
-        {
-          id: "test-3",
-          title: "Test 3",
-          status:
-            number === 17 || number === 14 || number === 10
-              ? "completed"
-              : "not-started",
-        },
-        {
-          id: "test-4",
-          title: "Test 4",
-          status:
-            number === 13 || number === 11 || number === 8
-              ? "completed"
-              : "not-started",
-        },
-      ] as CambridgeTest[],
-    };
-  } );
-}
-
-const books: CambridgeBook[] = createCambridgeBooks();
+import {
+  CambridgeBook,
+  CambridgeTest,
+} from "@/types/cambridge";
 
 export default function MockTestLibraryPage () {
-  const [ searchQuery, setSearchQuery ] = useState( "" );
-  const [ bookFilter, setBookFilter ] = useState( "All Books" );
-  const [ statusFilter, setStatusFilter ] = useState( "All Status" );
-  const [ selectedBook, setSelectedBook ] = useState<CambridgeBook | null>( null );
-  const [ selectedTest, setSelectedTest ] = useState<CambridgeTest | null>( null );
-  const [ modalOpen, setModalOpen ] = useState( false );
+  const [ books, setBooks ] = useState<CambridgeBook[]>( [] );
+  const [ testsMap, setTestsMap ] = useState<
+    Record<number, CambridgeTest[]>
+  >( {} );
 
-  const bookFilterOptions = useMemo( () => {
-    return [ "All Books", ...books.map( ( book ) => book.title ) ];
+  const [ loading, setLoading ] = useState( true );
+
+  const [ searchQuery, setSearchQuery ] = useState( "" );
+  const [ bookFilter, setBookFilter ] =
+    useState( "All Books" );
+
+  const [ statusFilter, setStatusFilter ] =
+    useState( "All Status" );
+
+  const [ selectedBook, setSelectedBook ] =
+    useState<CambridgeBook | null>( null );
+
+  const [ selectedTest, setSelectedTest ] =
+    useState<CambridgeTest | null>( null );
+
+  const [ modalOpen, setModalOpen ] =
+    useState( false );
+
+  useEffect( () => {
+    fetchLibrary();
   }, [] );
 
+  async function fetchLibrary () {
+    try {
+      setLoading( true );
+
+      const booksData = await getBooks();
+
+      setBooks( booksData );
+
+      const testEntries = await Promise.all(
+        booksData.map( async ( book: CambridgeBook ) => {
+          const tests = await getBookTests( book.id );
+
+          const normalizedTests = tests.map(
+            ( test: CambridgeTest, index: number ) => ( {
+              ...test,
+              status:
+                index % 3 === 0
+                  ? "completed"
+                  : index % 2 === 0
+                    ? "in-progress"
+                    : "not-started",
+            } )
+          );
+
+          return [ book.id, normalizedTests ];
+        } )
+      );
+
+      const mappedTests = Object.fromEntries(
+        testEntries
+      );
+
+      setTestsMap( mappedTests );
+    } catch ( error ) {
+      console.error( error );
+    } finally {
+      setLoading( false );
+    }
+  }
+
+  const formattedBooks = useMemo( () => {
+    return books.map( ( book ) => ( {
+      ...book,
+      label: `C${ book.title.replace( /\D/g, "" ) }`,
+      tests: testsMap[ book.id ] || [],
+    } ) );
+  }, [ books, testsMap ] );
+
+  const bookFilterOptions = useMemo( () => {
+    return [
+      "All Books",
+      ...formattedBooks.map( ( book ) => book.title ),
+    ];
+  }, [ formattedBooks ] );
+
   const filteredBooks = useMemo( () => {
-    return books
+    return formattedBooks
       .map( ( book ) => {
         const matchesBook =
-          bookFilter === "All Books" || book.title === bookFilter;
+          bookFilter === "All Books" ||
+          book.title === bookFilter;
 
-        const filteredTests = book.tests.filter( ( test ) => {
-          const matchesSearch =
-            book.title.toLowerCase().includes( searchQuery.toLowerCase() ) ||
-            test.title.toLowerCase().includes( searchQuery.toLowerCase() ) ||
-            book.label.toLowerCase().includes( searchQuery.toLowerCase() );
+        const filteredTests = book.tests.filter(
+          ( test: any ) => {
+            const matchesSearch =
+              book.title
+                .toLowerCase()
+                .includes(
+                  searchQuery.toLowerCase()
+                ) ||
+              test.title
+                .toLowerCase()
+                .includes(
+                  searchQuery.toLowerCase()
+                );
 
-          const normalizedStatus = statusFilter
-            .toLowerCase()
-            .replaceAll( " ", "-" );
+            const normalizedStatus =
+              statusFilter
+                .toLowerCase()
+                .replaceAll( " ", "-" );
 
-          const matchesStatus =
-            statusFilter === "All Status" || test.status === normalizedStatus;
+            const matchesStatus =
+              statusFilter === "All Status" ||
+              test.status === normalizedStatus;
 
-          return matchesSearch && matchesStatus;
-        } );
+            return (
+              matchesSearch && matchesStatus
+            );
+          }
+        );
 
         return {
           ...book,
-          tests: matchesBook ? filteredTests : [],
+          tests: matchesBook
+            ? filteredTests
+            : [],
         };
       } )
       .filter( ( book ) => book.tests.length > 0 );
-  }, [ searchQuery, bookFilter, statusFilter ] );
+  }, [
+    formattedBooks,
+    searchQuery,
+    bookFilter,
+    statusFilter,
+  ] );
 
-  const totalTests = books.reduce( ( sum, book ) => sum + book.tests.length, 0 );
+  const totalTests = Object.values(
+    testsMap
+  ).flat().length;
 
-  const completedTests = books.reduce(
-    ( sum, book ) =>
-      sum + book.tests.filter( ( test ) => test.status === "completed" ).length,
-    0
-  );
+  const completedTests = Object.values(
+    testsMap
+  )
+    .flat()
+    .filter(
+      ( test: any ) =>
+        test.status === "completed"
+    ).length;
 
-  const inProgressTests = books.reduce(
-    ( sum, book ) =>
-      sum + book.tests.filter( ( test ) => test.status === "in-progress" ).length,
-    0
-  );
+  const inProgressTests = Object.values(
+    testsMap
+  )
+    .flat()
+    .filter(
+      ( test: any ) =>
+        test.status === "in-progress"
+    ).length;
 
-  function handleSelectTest ( book: CambridgeBook, test: CambridgeTest ) {
+  function handleSelectTest (
+    book: CambridgeBook,
+    test: CambridgeTest
+  ) {
     setSelectedBook( book );
     setSelectedTest( test );
     setModalOpen( true );
@@ -140,8 +207,8 @@ export default function MockTestLibraryPage () {
     modules: SelectedModule[];
   } ) {
     const query = new URLSearchParams( {
-      book: payload.book.id,
-      test: payload.test.id,
+      book: String( payload.book.id ),
+      test: String( payload.test.id ),
       mode: payload.mode,
       modules: payload.modules.join( "," ),
     } );
@@ -150,7 +217,7 @@ export default function MockTestLibraryPage () {
   }
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-3 space-y-8 duration-500">
+    <div className="animate-in fade-in slide-in-from-bottom-3 min-h-screen space-y-8 bg-gradient-to-br from-slate-50 via-white to-blue-50 p-4 duration-500 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <LibraryHero />
 
       <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
@@ -158,7 +225,7 @@ export default function MockTestLibraryPage () {
           icon={ BookOpen }
           title="Available Tests"
           value={ `${ totalTests }` }
-          subtitle="Cambridge 20 to 5"
+          subtitle="Cambridge IELTS"
           color="blue"
         />
 
@@ -197,9 +264,11 @@ export default function MockTestLibraryPage () {
 
             <input
               value={ searchQuery }
-              onChange={ ( event ) => setSearchQuery( event.target.value ) }
+              onChange={ ( event ) =>
+                setSearchQuery( event.target.value )
+              }
               placeholder="Search Cambridge book or test..."
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 pl-11 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:ring-blue-950"
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 pl-11 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
             />
           </div>
 
@@ -211,19 +280,25 @@ export default function MockTestLibraryPage () {
 
             <select
               value={ bookFilter }
-              onChange={ ( event ) => setBookFilter( event.target.value ) }
-              className="w-full cursor-pointer appearance-none rounded-xl border border-slate-300 bg-white px-4 py-3 pl-11 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:ring-blue-950"
+              onChange={ ( event ) =>
+                setBookFilter( event.target.value )
+              }
+              className="w-full cursor-pointer appearance-none rounded-xl border border-slate-300 bg-white px-4 py-3 pl-11 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
             >
               { bookFilterOptions.map( ( book ) => (
-                <option key={ book }>{ book }</option>
+                <option key={ book }>
+                  { book }
+                </option>
               ) ) }
             </select>
           </div>
 
           <select
             value={ statusFilter }
-            onChange={ ( event ) => setStatusFilter( event.target.value ) }
-            className="w-full cursor-pointer rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:ring-blue-950"
+            onChange={ ( event ) =>
+              setStatusFilter( event.target.value )
+            }
+            className="w-full cursor-pointer rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
           >
             <option>All Status</option>
             <option>Not Started</option>
@@ -233,41 +308,37 @@ export default function MockTestLibraryPage () {
         </div>
       </section>
 
-      <section className="space-y-10">
-        { filteredBooks.map( ( book ) => (
-          <CambridgeBookCard
-            key={ book.id }
-            book={ book }
-            onSelectTest={ handleSelectTest }
-          />
-        ) ) }
-
-        { filteredBooks.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
-            <h3 className="text-xl font-black text-slate-950 dark:text-white">
-              No tests found
-            </h3>
-
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Try changing your search or filters.
-            </p>
-          </div>
-        ) }
-      </section>
+      { loading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+        </div>
+      ) : (
+        <section className="space-y-10">
+          { filteredBooks.map( ( book: any ) => (
+            <CambridgeBookCard
+              key={ book.id }
+              book={ book }
+              onSelectTest={ handleSelectTest }
+            />
+          ) ) }
+        </section>
+      ) }
 
       <section className="rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-950/20">
         <h2 className="text-xl font-black text-slate-950 dark:text-white">
-          Next Development Step
+          Real CBT IELTS Experience
         </h2>
 
         <p className="mt-2 text-sm leading-7 text-slate-600 dark:text-slate-300">
-          The library now includes Cambridge 20 down to Cambridge 5. Next, we
-          should create the real computer-based IELTS test center page with
-          split-screen questions, timer, answers, section navigation, result,
-          and review mistakes.
+          Your Cambridge library is now fully
+          connected with FastAPI backend.
+          Dynamic books and tests are loading
+          directly from PostgreSQL.
         </p>
 
-        <Button className="mt-5">Create Test Center Next</Button>
+        <Button className="mt-5">
+          Continue Development
+        </Button>
       </section>
 
       <TestModeModal
@@ -296,16 +367,37 @@ function LibraryHero () {
           </h1>
 
           <p className="mt-4 max-w-2xl text-sm leading-7 text-blue-100 sm:text-base">
-            Choose a Cambridge-style IELTS test, select practice or exam mode,
-            complete modules, then review your mistakes and results.
+            Choose a Cambridge-style IELTS
+            test, select practice or exam mode,
+            complete modules, then review your
+            mistakes and results.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <HeroStat icon={ Headphones } label="Listening" value="40 Qs" />
-          <HeroStat icon={ BookOpen } label="Reading" value="40 Qs" />
-          <HeroStat icon={ PenLine } label="Writing" value="2 Tasks" />
-          <HeroStat icon={ Mic } label="Speaking" value="3 Parts" />
+          <HeroStat
+            icon={ Headphones }
+            label="Listening"
+            value="40 Qs"
+          />
+
+          <HeroStat
+            icon={ BookOpen }
+            label="Reading"
+            value="40 Qs"
+          />
+
+          <HeroStat
+            icon={ PenLine }
+            label="Writing"
+            value="2 Tasks"
+          />
+
+          <HeroStat
+            icon={ Mic }
+            label="Speaking"
+            value="3 Parts"
+          />
         </div>
       </div>
     </section>
@@ -323,13 +415,18 @@ function HeroStat ( {
 } ) {
   return (
     <div className="rounded-2xl bg-white/15 p-4 backdrop-blur transition hover:scale-[1.02]">
-      <Icon size={ 22 } className="text-blue-100" />
+      <Icon
+        size={ 22 }
+        className="text-blue-100"
+      />
 
       <p className="mt-3 text-xs font-bold uppercase tracking-wide text-blue-100">
         { label }
       </p>
 
-      <p className="mt-1 text-2xl font-black text-white">{ value }</p>
+      <p className="mt-1 text-2xl font-black text-white">
+        { value }
+      </p>
     </div>
   );
 }
@@ -345,7 +442,11 @@ function LibraryStat ( {
   title: string;
   value: string;
   subtitle: string;
-  color: "blue" | "green" | "purple" | "cyan";
+  color:
+  | "blue"
+  | "green"
+  | "purple"
+  | "cyan";
 } ) {
   const colors = {
     blue: "bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-300",

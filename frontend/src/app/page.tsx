@@ -1,55 +1,41 @@
 import Link from "next/link";
-import Button from "@/components/ui/Button";
 
 export default function HomePage () {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white px-6 py-10 transition-colors duration-300 dark:from-slate-950 dark:to-slate-900">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white">
-            B
-          </div>
-          <span className="text-xl font-bold text-slate-900 dark:text-white">
-            BandMate AI
-          </span>
-        </Link>
-
-        <div className="flex items-center gap-3">
-          <Link href="/login">
-            <Button variant="ghost">Login</Button>
-          </Link>
-          <Link href="/register">
-            <Button>Start Free</Button>
-          </Link>
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 px-6 dark:from-slate-950 dark:via-slate-900 dark:to-black">
+      <div className="max-w-3xl text-center">
+        <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-100 px-4 py-2 text-sm font-bold text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300">
+          BandMate AI Platform
         </div>
-      </nav>
 
-      <section className="mx-auto flex max-w-5xl flex-col items-center justify-center py-28 text-center">
-        <p className="mb-4 rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-          AI-powered IELTS preparation
-        </p>
-
-        <h1 className="max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-5xl md:text-6xl">
-          Prepare for IELTS smarter with AI-powered feedback
+        <h1 className="mt-8 text-5xl font-black leading-tight text-slate-950 dark:text-white md:text-7xl">
+          Real Computer-Based
+          <span className="block bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+            IELTS Practice
+          </span>
         </h1>
 
-        <p className="mt-6 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
-          Master Writing, Speaking, Listening, and Reading with personalized
-          practice, instant feedback, mock tests, and progress tracking.
+        <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
+          Practice Cambridge IELTS tests with a real CBT experience.
+          Improve Listening, Reading, Writing, and Speaking using AI-powered analysis.
         </p>
 
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          <Link href="/register">
-            <Button className="w-full sm:w-auto">Start Free Practice</Button>
+        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <Link
+            href="/login"
+            className="cursor-pointer rounded-2xl bg-blue-600 px-8 py-4 text-lg font-bold text-white shadow-lg shadow-blue-600/20 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-700"
+          >
+            Login
           </Link>
 
-          <Link href="/dashboard">
-            <Button variant="outline" className="w-full sm:w-auto">
-              View Demo
-            </Button>
+          <Link
+            href="/register"
+            className="cursor-pointer rounded-2xl border border-slate-300 bg-white px-8 py-4 text-lg font-bold text-slate-900 transition-all duration-300 hover:-translate-y-1 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
+          >
+            Create Account
           </Link>
         </div>
-      </section>
+      </div>
     </main>
   );
 }
